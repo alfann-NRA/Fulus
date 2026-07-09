@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pencatatan Omset - TEHNANG</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                            950: '#042f2e',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 dark:bg-dark-900 text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-dark-800 shadow-sm border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="wallet" class="text-brand-500 w-6 h-6"></i>
+                <h1 class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">TEH<span class="text-brand-500">NANG</span></h1>
+            </div>
+            <button id="btn-lock" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-full text-sm font-medium transition-colors" onclick="openPinModal()">
+                <i data-lucide="lock" class="w-4 h-4"></i>
+                Lihat Laba
+            </button>
+            <button id="btn-unlock" class="hidden items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-lg shadow-brand-500/30" onclick="lockApp()">
+                <i data-lucide="unlock" class="w-4 h-4"></i>
+                Sembunyikan Laba
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-5xl mx-auto w-full px-4 py-8 flex flex-col gap-8">
+
+        <!-- Public View -->
+        <div id="view-public" class="flex flex-col gap-8 fade-in block">
+            
+            <!-- Dashboard Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden group">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-brand-500/10 rounded-full blur-2xl group-hover:bg-brand-500/20 transition-all"></div>
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Omset Hari Ini</p>
+                    <h2 class="text-4xl font-bold text-slate-900 dark:text-white" id="today-omset">Rp 0</h2>
+                </div>
+                <div class="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden group">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Transaksi Hari Ini</p>
+                    <h2 class="text-4xl font-bold text-slate-900 dark:text-white" id="today-tx-count">0</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Input Forms -->
+                <div class="lg:col-span-1 flex flex-col gap-6">
+                    <div class="glass-card rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <!-- Tabs -->
+                        <div class="flex border-b border-slate-200 dark:border-slate-700">
+                            <button id="tab-omset" class="flex-1 py-3 text-sm font-medium border-b-2 border-brand-500 text-brand-600 dark:text-brand-500 bg-brand-50/50 dark:bg-brand-900/20 transition-colors" onclick="switchTab('omset')">
+                                Catat Omset
+                            </button>
+                            <button id="tab-expense" class="flex-1 py-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors" onclick="switchTab('expense')">
+                                Catat Biaya
+                            </button>
+                        </div>
+
+                        <!-- Form Omset -->
+                        <div id="form-omset-container" class="p-6">
+                            <form id="form-omset" onsubmit="submitOmset(event)" class="flex flex-col gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Laporan / Shift</label>
+                                    <input type="text" id="omset-name" required class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="Contoh: Omzet Pagi">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Total Omzet (Rp)</label>
+                                    <input type="number" id="omset-price" required min="0" class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="0">
+                                </div>
+                                <button type="submit" class="mt-2 w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 rounded-lg transition-colors shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2">
+                                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Simpan Omset
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Form Expense -->
+                        <div id="form-expense-container" class="p-6 hidden">
+                            <form id="form-expense" onsubmit="submitExpense(event)" class="flex flex-col gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Pengeluaran</label>
+                                    <input type="text" id="expense-name" required class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all" placeholder="Contoh: Listrik / Gaji">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Jumlah Biaya (Rp)</label>
+                                    <input type="number" id="expense-amount" required min="0" class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all" placeholder="0">
+                                </div>
+                                <button type="submit" class="mt-2 w-full bg-rose-500 hover:bg-rose-600 text-white font-medium py-2.5 rounded-lg transition-colors shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2">
+                                    <i data-lucide="minus-circle" class="w-4 h-4"></i> Simpan Pengeluaran
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts & History -->
+                <div class="lg:col-span-2 flex flex-col gap-6">
+                    
+                    <div class="glass-card rounded-2xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col items-center">
+                        <div class="w-full flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg text-slate-900 dark:text-white">Ringkasan Omset (Grafik 3D)</h3>
+                            <select id="chart-filter" onchange="renderChart()" class="text-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 outline-none text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-brand-500 transition-shadow">
+                                <option value="week">7 Hari Terakhir</option>
+                                <option value="month" selected>30 Hari Terakhir</option>
+                            </select>
+                        </div>
+                        <!-- 3D Pie Chart Container -->
+                        <div id="piechart_3d" class="w-full h-[300px] flex items-center justify-center bg-slate-50/50 dark:bg-dark-900/50 rounded-xl overflow-hidden">
+                            <!-- Chart will render here -->
+                            <p class="text-slate-400 text-sm italic chart-placeholder">Loading chart...</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[400px]">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                            <h3 class="font-semibold text-lg text-slate-900 dark:text-white">Riwayat Transaksi Publik (Hari Ini)</h3>
+                        </div>
+                        <div class="overflow-y-auto p-0">
+                            <table class="w-full text-sm text-left text-slate-700 dark:text-slate-300">
+                                <thead class="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80 sticky top-0 uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-3 font-medium">Waktu</th>
+                                        <th class="px-6 py-3 font-medium">Nama/Keterangan</th>
+                                        <th class="px-6 py-3 font-medium text-right">Nilai (Rp)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="public-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Protected Profit View (Hidden by default) -->
+        <div id="view-protected" class="hidden flex-col gap-8 fade-in">
+            
+            <!-- Super Dashboard -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden bg-gradient-to-br from-brand-500/10 to-transparent">
+                    <p class="text-sm font-medium text-brand-600 dark:text-brand-400 mb-1">Total Omset Kotor (Hari Ini)</p>
+                    <h2 class="text-4xl font-bold text-slate-900 dark:text-white" id="prot-laba-kotor">Rp 0</h2>
+                </div>
+                <div class="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden bg-gradient-to-br from-rose-500/10 to-transparent">
+                    <p class="text-sm font-medium text-rose-600 dark:text-rose-400 mb-1">Total Pengeluaran (Hari Ini)</p>
+                    <h2 class="text-4xl font-bold text-slate-900 dark:text-white" id="prot-pengeluaran">Rp 0</h2>
+                </div>
+                <div class="glass-card p-8 rounded-2xl border-2 border-brand-500 dark:border-brand-500 relative overflow-hidden shadow-xl shadow-brand-500/10 bg-brand-500 text-white">
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
+                    <p class="text-sm font-medium text-brand-100 mb-1">LABA BERSIH (HARI INI)</p>
+                    <h2 class="text-5xl font-extrabold" id="prot-laba-bersih">Rp 0</h2>
+                </div>
+            </div>
+
+            <!-- Complete History Table -->
+            <div class="glass-card rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
+                <div class="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                    <h3 class="font-semibold text-lg text-brand-500">Rincian Laba & Pengeluaran Lengkap</h3>
+                    <div class="text-sm text-slate-500">*Data di bawah ini bersifat rahasia.</div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left whitespace-nowrap text-slate-700 dark:text-slate-300">
+                        <thead class="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80 uppercase tracking-wider">
+                            <tr>
+                                <th class="px-6 py-4 font-medium">Tipe</th>
+                                <th class="px-6 py-4 font-medium">Waktu</th>
+                                <th class="px-6 py-4 font-medium">Keterangan</th>
+                                <th class="px-6 py-4 font-medium text-right">Omzet</th>
+                                <th class="px-6 py-4 font-medium text-right">Pengeluaran</th>
+                                <th class="px-6 py-4 font-medium text-right text-brand-600 dark:text-brand-400">Nilai Bersih</th>
+                            </tr>
+                        </thead>
+                        <tbody id="protected-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+
+    </main>
+
+    <!-- PIN Modal Overlay -->
+    <div id="pin-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <!-- Backdrop Blur -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closePinModal()"></div>
+        
+        <!-- Modal Box -->
+        <div class="relative bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-sm p-8 transform scale-95 transition-transform duration-300" id="pin-modal-content">
+            
+            <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-600 dark:text-slate-300">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Akses Terkunci</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Masukkan PIN untuk melihat keuntungan.</p>
+            </div>
+
+            <form onsubmit="verifyPin(event)" class="flex flex-col gap-4">
+                <input type="password" id="pin-input" required class="text-center tracking-[0.5em] text-2xl input-field w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-dark-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all font-mono" placeholder="••••••" maxlength="6">
+                <p id="pin-error" class="text-rose-500 text-sm text-center hidden font-medium">PIN Tidak Valid</p>
+                <button type="submit" class="w-full bg-slate-900 dark:bg-brand-600 hover:bg-slate-800 dark:hover:bg-brand-500 text-white font-medium py-3 rounded-xl transition-colors shadow-lg">
+                    Buka Dasbor Laba
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+        <span id="toast-message">Berhasil disimpan</span>
+    </div>
+
+    <script type="module" src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
