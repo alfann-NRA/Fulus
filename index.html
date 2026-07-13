@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,21 +8,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
                     colors: {
                         brand: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            900: '#134e4a',
-                            950: '#042f2e',
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            900: '#581c87',
                         },
-                        dark: {
-                            800: '#1e293b',
-                            900: '#0f172a',
+                        pastel: {
+                            pink: '#ffb7b2',
+                            blue: '#e2f0cb',
+                            yellow: '#ffdac1',
+                            mint: '#b5ead7',
                         }
                     }
                 }
@@ -34,22 +40,47 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=4">
 </head>
-<body class="bg-slate-50 dark:bg-dark-900 text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-[#fcfaf8] text-slate-700 font-sans antialiased min-h-screen flex flex-col overflow-x-hidden relative">
+
+    <!-- Splash Screen Preloader -->
+    <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-cover bg-center transition-opacity duration-1000" style="background-image: linear-gradient(to bottom, rgba(6, 78, 59, 0.6), rgba(2, 44, 34, 0.9)), url('https://images.unsplash.com/photo-1594916298539-7815fc525a7a?auto=format&fit=crop&q=80&w=2000');">
+        <div class="relative z-10 flex flex-col items-center gap-6">
+            <div style="perspective: 1000px;">
+                <h1 class="text-7xl md:text-9xl font-black text-[#a7f3d0] tracking-widest drop-shadow-[0_15px_30px_rgba(0,0,0,0.6)] animate-3d-rotate">
+                    TEHNANG
+                </h1>
+            </div>
+            <p class="text-lg md:text-2xl font-extrabold text-white bg-[#059669]/60 px-8 py-3 rounded-full backdrop-blur-md border border-[#34d399]/40 shadow-2xl tracking-wide">
+                #TehnangkanHarimu
+            </p>
+        </div>
+        
+        <div class="absolute bottom-12 flex flex-col items-center gap-4">
+            <div class="w-10 h-10 border-4 border-[#34d399] border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-[#a7f3d0] text-xs md:text-sm font-bold tracking-widest uppercase">Mempersiapkan Dasbor...</p>
+        </div>
+    </div>
+
+    <!-- Background Ornaments -->
+    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#ffb7b2]/20 blur-[120px] pointer-events-none animate-glow z-0"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[#b5ead7]/30 blur-[120px] pointer-events-none animate-glow z-0" style="animation-delay: 2s;"></div>
 
     <!-- Header -->
-    <header class="bg-white dark:bg-dark-800 shadow-sm border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <i data-lucide="wallet" class="text-brand-500 w-6 h-6"></i>
-                <h1 class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">TEH<span class="text-brand-500">NANG</span></h1>
+    <header class="glass-card shadow-sm border-b border-white/50 sticky top-0 z-20 transition-all duration-300">
+        <div class="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#d8b4fe] to-[#c084fc] flex items-center justify-center shadow-lg shadow-[#c084fc]/30 card-3d">
+                    <i data-lucide="wallet" class="text-white w-6 h-6"></i>
+                </div>
+                <h1 class="font-extrabold text-2xl tracking-tight text-slate-800 drop-shadow-sm">TEH<span class="text-brand-500">NANG</span></h1>
             </div>
-            <button id="btn-lock" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-full text-sm font-medium transition-colors" onclick="openPinModal()">
-                <i data-lucide="lock" class="w-4 h-4"></i>
+            <button id="btn-lock" class="btn-3d btn-3d-secondary px-5 py-2.5 flex items-center gap-2 text-sm text-slate-600 font-bold" onclick="openPinModal()">
+                <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
                 Lihat Laba
             </button>
-            <button id="btn-unlock" class="hidden items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-lg shadow-brand-500/30" onclick="lockApp()">
+            <button id="btn-unlock" class="hidden btn-3d btn-3d-primary px-5 py-2.5 flex items-center gap-2 text-sm font-bold" onclick="lockApp()">
                 <i data-lucide="unlock" class="w-4 h-4"></i>
                 Sembunyikan Laba
             </button>
@@ -57,22 +88,52 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-5xl mx-auto w-full px-4 py-8 flex flex-col gap-8">
+    <main class="flex-grow max-w-5xl mx-auto w-full px-4 py-10 flex flex-col gap-10 relative z-10">
 
         <!-- Public View -->
-        <div id="view-public" class="flex flex-col gap-8 fade-in block">
+        <div id="view-public" class="flex flex-col gap-10 fade-in block">
             
             <!-- Dashboard Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-brand-500/10 rounded-full blur-2xl group-hover:bg-brand-500/20 transition-all"></div>
-                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Omset Hari Ini</p>
-                    <h2 class="text-4xl font-bold text-slate-900 dark:text-white" id="today-omset">Rp 0</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Omset -->
+                <div class="glass-card card-3d p-6 lg:p-8 relative overflow-hidden group bg-gradient-to-br from-white/80 to-[#faf5ff]/80 border-t-4 border-t-brand-300">
+                    <div class="absolute -right-6 -top-6 w-32 h-32 bg-brand-300/30 rounded-full blur-2xl group-hover:bg-brand-300/50 transition-all duration-500"></div>
+                    <div class="relative z-10">
+                        <p class="text-sm font-black text-brand-500 mb-2 uppercase tracking-wider">Total Omset Hari Ini</p>
+                        <h2 class="text-4xl lg:text-5xl font-extrabold text-slate-800 drop-shadow-sm" id="today-omset">Rp 0</h2>
+                    </div>
+                    <div class="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i data-lucide="trending-up" class="w-16 h-16 text-brand-400"></i>
+                    </div>
                 </div>
-                <div class="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
-                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Transaksi Hari Ini</p>
-                    <h2 class="text-4xl font-bold text-slate-900 dark:text-white" id="today-tx-count">0</h2>
+                <!-- Transaksi -->
+                <div class="glass-card card-3d p-6 lg:p-8 relative overflow-hidden group bg-gradient-to-br from-white/80 to-[#e2f0cb]/40 border-t-4 border-t-[#b5ead7]">
+                    <div class="absolute -right-6 -top-6 w-32 h-32 bg-[#b5ead7]/40 rounded-full blur-2xl group-hover:bg-[#b5ead7]/60 transition-all duration-500"></div>
+                    <div class="relative z-10">
+                        <p class="text-sm font-black text-[#6ba88f] mb-2 uppercase tracking-wider">Total Transaksi Hari Ini</p>
+                        <h2 class="text-4xl lg:text-5xl font-extrabold text-slate-800 drop-shadow-sm" id="today-tx-count">0</h2>
+                    </div>
+                    <div class="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i data-lucide="receipt" class="w-16 h-16 text-[#8ac7ab]"></i>
+                    </div>
+                </div>
+                <!-- Transfer -->
+                <div class="glass-card card-3d p-6 lg:p-8 relative overflow-hidden group bg-gradient-to-br from-white/80 to-[#ffdac1]/40 border-t-4 border-t-[#ffdac1]">
+                    <div class="absolute -right-6 -top-6 w-32 h-32 bg-[#ffdac1]/40 rounded-full blur-2xl group-hover:bg-[#ffdac1]/60 transition-all duration-500"></div>
+                    <div class="relative z-10 flex flex-col h-full justify-between">
+                        <div>
+                            <p class="text-sm font-black text-[#d69f7e] mb-2 uppercase tracking-wider">Jumlah Transfer</p>
+                            <h2 class="text-3xl lg:text-4xl font-extrabold text-slate-800 drop-shadow-sm mb-4" id="transfer-amount">Rp 0</h2>
+                        </div>
+                        <div class="flex items-center gap-2 mt-auto relative z-20">
+                            <input type="date" id="tf-start-date" onchange="updateTransferAmount()" class="w-full text-[11px] lg:text-xs input-3d px-2 py-1.5 font-semibold text-slate-700 bg-white/70 border border-[#ffdac1] rounded-lg outline-none focus:ring-2 focus:ring-[#ffdac1]">
+                            <span class="text-slate-400 font-bold">-</span>
+                            <input type="date" id="tf-end-date" onchange="updateTransferAmount()" class="w-full text-[11px] lg:text-xs input-3d px-2 py-1.5 font-semibold text-slate-700 bg-white/70 border border-[#ffdac1] rounded-lg outline-none focus:ring-2 focus:ring-[#ffdac1]">
+                        </div>
+                    </div>
+                    <div class="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-500 transform group-hover:scale-110 pointer-events-none">
+                        <i data-lucide="send" class="w-16 h-16 text-[#e5b394]"></i>
+                    </div>
                 </div>
             </div>
 
@@ -80,55 +141,55 @@
                 
                 <!-- Input Forms -->
                 <div class="lg:col-span-1 flex flex-col gap-6">
-                    <div class="glass-card rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div class="glass-card card-3d overflow-hidden">
                         <!-- Tabs -->
-                        <div class="flex border-b border-slate-200 dark:border-slate-700">
-                            <button id="tab-omset" class="flex-1 py-3 text-sm font-medium border-b-2 border-brand-500 text-brand-600 dark:text-brand-500 bg-brand-50/50 dark:bg-brand-900/20 transition-colors" onclick="switchTab('omset')">
-                                Catat Omset
+                        <div class="flex border-b border-brand-100 bg-brand-50/50">
+                            <button id="tab-omset" class="flex-1 py-4 text-sm font-black border-b-2 border-brand-400 text-brand-600 bg-white transition-all shadow-[inset_0_-2px_4px_rgba(0,0,0,0.02)] tracking-wide" onclick="switchTab('omset')">
+                                CATAT OMSET
                             </button>
-                            <button id="tab-expense" class="flex-1 py-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors" onclick="switchTab('expense')">
-                                Catat Biaya
+                            <button id="tab-expense" class="flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-all tracking-wide" onclick="switchTab('expense')">
+                                CATAT BIAYA
                             </button>
                         </div>
 
                         <!-- Form Omset -->
-                        <div id="form-omset-container" class="p-6">
-                            <form id="form-omset" onsubmit="submitOmset(event)" class="flex flex-col gap-4">
+                        <div id="form-omset-container" class="p-6 bg-white/40">
+                            <form id="form-omset" onsubmit="submitOmset(event)" class="flex flex-col gap-5">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tanggal (Opsional)</label>
-                                    <input type="datetime-local" id="omset-date" class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                                    <label class="block text-sm font-black text-slate-600 mb-1.5 ml-1">Tanggal</label>
+                                    <input type="date" id="omset-date" required class="input-3d w-full px-4 py-3 text-slate-800 placeholder-slate-300 font-semibold">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Laporan / Shift</label>
-                                    <input type="text" id="omset-name" required class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="Contoh: Omzet Pagi">
+                                    <label class="block text-sm font-black text-slate-600 mb-1.5 ml-1">Nama Laporan / Shift</label>
+                                    <input type="text" id="omset-name" required class="input-3d w-full px-4 py-3 text-slate-800 placeholder-slate-300 font-semibold" placeholder="Contoh: Omzet Pagi">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Total Omzet (Rp)</label>
-                                    <input type="number" id="omset-price" required min="0" class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="0">
+                                    <label class="block text-sm font-black text-slate-600 mb-1.5 ml-1">Total Omzet (Rp)</label>
+                                    <input type="text" id="omset-price" required class="input-3d w-full px-4 py-3 text-slate-800 placeholder-slate-300 text-lg font-extrabold" placeholder="0" oninput="formatInputRupiah(this)">
                                 </div>
-                                <button type="submit" class="mt-2 w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 rounded-lg transition-colors shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2">
-                                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Simpan Omset
+                                <button type="submit" class="mt-4 w-full btn-3d btn-3d-primary py-3.5 flex items-center justify-center gap-2">
+                                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Simpan Omset
                                 </button>
                             </form>
                         </div>
 
                         <!-- Form Expense -->
-                        <div id="form-expense-container" class="p-6 hidden">
-                            <form id="form-expense" onsubmit="submitExpense(event)" class="flex flex-col gap-4">
+                        <div id="form-expense-container" class="p-6 bg-white/40 hidden">
+                            <form id="form-expense" onsubmit="submitExpense(event)" class="flex flex-col gap-5">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tanggal (Opsional)</label>
-                                    <input type="datetime-local" id="expense-date" class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all">
+                                    <label class="block text-sm font-black text-slate-600 mb-1.5 ml-1">Tanggal</label>
+                                    <input type="date" id="expense-date" required class="input-3d w-full px-4 py-3 text-slate-800 placeholder-slate-300 font-semibold">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Pengeluaran</label>
-                                    <input type="text" id="expense-name" required class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all" placeholder="Contoh: Listrik / Gaji">
+                                    <label class="block text-sm font-black text-slate-600 mb-1.5 ml-1">Nama Pengeluaran</label>
+                                    <input type="text" id="expense-name" required class="input-3d w-full px-4 py-3 text-slate-800 placeholder-slate-300 font-semibold" placeholder="Contoh: Listrik / Gaji">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Jumlah Biaya (Rp)</label>
-                                    <input type="number" id="expense-amount" required min="0" class="input-field w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-dark-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all" placeholder="0">
+                                    <label class="block text-sm font-black text-slate-600 mb-1.5 ml-1">Jumlah Biaya (Rp)</label>
+                                    <input type="text" id="expense-amount" required class="input-3d w-full px-4 py-3 text-slate-800 placeholder-slate-300 text-lg font-extrabold text-[#e88882]" placeholder="0" oninput="formatInputRupiah(this)">
                                 </div>
-                                <button type="submit" class="mt-2 w-full bg-rose-500 hover:bg-rose-600 text-white font-medium py-2.5 rounded-lg transition-colors shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2">
-                                    <i data-lucide="minus-circle" class="w-4 h-4"></i> Simpan Pengeluaran
+                                <button type="submit" class="mt-4 w-full btn-3d btn-3d-danger py-3.5 flex items-center justify-center gap-2">
+                                    <i data-lucide="minus-circle" class="w-5 h-5"></i> Simpan Pengeluaran
                                 </button>
                             </form>
                         </div>
@@ -136,37 +197,48 @@
                 </div>
 
                 <!-- Charts & History -->
-                <div class="lg:col-span-2 flex flex-col gap-6">
+                <div class="lg:col-span-2 flex flex-col gap-8">
                     
-                    <div class="glass-card rounded-2xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col items-center">
-                        <div class="w-full flex justify-between items-center mb-4">
-                            <h3 class="font-semibold text-lg text-slate-900 dark:text-white">Ringkasan Omset (Grafik 3D)</h3>
-                            <select id="chart-filter" onchange="renderChart()" class="text-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 outline-none text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-brand-500 transition-shadow">
+                    <div class="glass-card card-3d p-6 flex flex-col items-center bg-white/60">
+                        <div class="w-full flex justify-between items-center mb-6">
+                            <h3 class="font-extrabold text-xl text-slate-700 flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center text-brand-500 shadow-sm border border-brand-200">
+                                    <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                                </div>
+                                Ringkasan Omset
+                            </h3>
+                            <select id="chart-filter" onchange="renderChart()" class="text-sm font-bold bg-white border border-brand-100 rounded-xl px-4 py-2 outline-none text-slate-600 focus:ring-2 focus:ring-brand-300 shadow-sm cursor-pointer hover:bg-brand-50 transition-colors">
                                 <option value="week">7 Hari Terakhir</option>
                                 <option value="month" selected>30 Hari Terakhir</option>
                             </select>
                         </div>
                         <!-- 3D Pie Chart Container -->
-                        <div id="piechart_3d" class="w-full h-[300px] flex items-center justify-center bg-slate-50/50 dark:bg-dark-900/50 rounded-xl overflow-hidden">
+                        <div id="piechart_3d" class="w-full h-[320px] flex items-center justify-center bg-white/50 rounded-2xl overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] border border-brand-50">
                             <!-- Chart will render here -->
-                            <p class="text-slate-400 text-sm italic chart-placeholder">Loading chart...</p>
+                            <div class="flex flex-col items-center gap-3 animate-pulse">
+                                <div class="w-12 h-12 rounded-full border-4 border-brand-100 border-t-brand-400 animate-spin"></div>
+                                <p class="text-slate-400 text-sm font-bold">Memuat data analitik...</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="glass-card rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[400px]">
-                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
-                            <h3 class="font-semibold text-lg text-slate-900 dark:text-white">Riwayat Transaksi Publik (Hari Ini)</h3>
+                    <div class="glass-card card-3d overflow-hidden flex flex-col max-h-[400px]">
+                        <div class="p-5 border-b border-brand-50 bg-[#fafafa]/80 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-[#e2f0cb] flex items-center justify-center text-[#6ba88f] shadow-sm border border-[#cbe1a8]">
+                                <i data-lucide="list" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="font-extrabold text-xl text-slate-700">Riwayat Hari Ini</h3>
                         </div>
-                        <div class="overflow-y-auto p-0">
-                            <table class="w-full text-sm text-left text-slate-700 dark:text-slate-300">
-                                <thead class="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80 sticky top-0 uppercase tracking-wider">
+                        <div class="overflow-y-auto p-0 bg-white/50">
+                            <table class="w-full text-sm text-left text-slate-600">
+                                <thead class="text-xs text-slate-400 bg-[#fbfbfb]/90 backdrop-blur-md sticky top-0 uppercase tracking-wider font-extrabold shadow-sm z-10 border-b border-slate-100">
                                     <tr>
-                                        <th class="px-6 py-3 font-medium">Waktu</th>
-                                        <th class="px-6 py-3 font-medium">Nama/Keterangan</th>
-                                        <th class="px-6 py-3 font-medium text-right">Nilai (Rp)</th>
+                                        <th class="px-6 py-4">Waktu</th>
+                                        <th class="px-6 py-4">Nama/Keterangan</th>
+                                        <th class="px-6 py-4 text-right">Nilai (Rp)</th>
                                     </tr>
                                 </thead>
-                                <tbody id="public-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                <tbody id="public-table-body" class="divide-y divide-slate-50">
                                     <!-- Populated via JS -->
                                 </tbody>
                             </table>
@@ -178,44 +250,69 @@
         </div>
 
         <!-- Protected Profit View (Hidden by default) -->
-        <div id="view-protected" class="hidden flex-col gap-8 fade-in">
+        <div id="view-protected" class="hidden flex-col gap-10 fade-in">
             
             <!-- Super Dashboard -->
+            <div class="flex items-center gap-4 bg-white/60 p-4 rounded-2xl glass-card card-3d max-w-fit">
+                <div class="flex flex-col">
+                    <label class="text-xs font-bold text-slate-500 ml-1 mb-1">Mulai Tanggal</label>
+                    <input type="date" id="prot-start-date" onchange="updateProtectedDashboard()" class="input-3d px-3 py-2 text-sm font-semibold text-slate-700 bg-white border border-brand-100 rounded-xl focus:ring-2 focus:ring-brand-300 outline-none">
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-xs font-bold text-slate-500 ml-1 mb-1">Sampai Tanggal</label>
+                    <input type="date" id="prot-end-date" onchange="updateProtectedDashboard()" class="input-3d px-3 py-2 text-sm font-semibold text-slate-700 bg-white border border-brand-100 rounded-xl focus:ring-2 focus:ring-brand-300 outline-none">
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden bg-gradient-to-br from-brand-500/10 to-transparent">
-                    <p class="text-sm font-medium text-brand-600 dark:text-brand-400 mb-1">Total Omset Kotor (Hari Ini)</p>
-                    <h2 class="text-4xl font-bold text-slate-900 dark:text-white" id="prot-laba-kotor">Rp 0</h2>
+                <div class="glass-card card-3d p-8 relative overflow-hidden bg-gradient-to-br from-white/90 to-brand-50 border-t-4 border-t-brand-300">
+                    <p class="text-sm font-black text-brand-400 mb-2 uppercase tracking-wider">Omset Kotor</p>
+                    <h2 class="text-4xl font-extrabold text-slate-800" id="prot-laba-kotor">Rp 0</h2>
                 </div>
-                <div class="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden bg-gradient-to-br from-rose-500/10 to-transparent">
-                    <p class="text-sm font-medium text-rose-600 dark:text-rose-400 mb-1">Total Pengeluaran (Hari Ini)</p>
-                    <h2 class="text-4xl font-bold text-slate-900 dark:text-white" id="prot-pengeluaran">Rp 0</h2>
+                <div class="glass-card card-3d p-8 relative overflow-hidden bg-gradient-to-br from-white/90 to-rose-50 border-t-4 border-t-[#ffb7b2]">
+                    <p class="text-sm font-black text-[#e88882] mb-2 uppercase tracking-wider">Pengeluaran</p>
+                    <h2 class="text-4xl font-extrabold text-slate-800" id="prot-pengeluaran">Rp 0</h2>
                 </div>
-                <div class="glass-card p-8 rounded-2xl border-2 border-brand-500 dark:border-brand-500 relative overflow-hidden shadow-xl shadow-brand-500/10 bg-brand-500 text-white">
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
-                    <p class="text-sm font-medium text-brand-100 mb-1">LABA BERSIH (HARI INI)</p>
-                    <h2 class="text-5xl font-extrabold" id="prot-laba-bersih">Rp 0</h2>
+                <div class="card-3d p-8 relative overflow-hidden bg-gradient-to-br from-[#c084fc] to-[#a855f7] text-white border border-white/40 transform scale-105 z-10 shadow-[0_20px_40px_-10px_rgba(168,85,247,0.4)]">
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/20 rounded-full blur-3xl"></div>
+                    <div class="absolute -left-10 -top-10 w-32 h-32 bg-[#e9d5ff]/30 rounded-full blur-2xl"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-2 opacity-90">
+                            <i data-lucide="award" class="w-5 h-5"></i>
+                            <p class="text-sm font-black uppercase tracking-widest text-[#f3e8ff]">Laba Bersih (20%)</p>
+                        </div>
+                        <h2 class="text-5xl font-black drop-shadow-md" id="prot-laba-bersih">Rp 0</h2>
+                    </div>
                 </div>
             </div>
 
             <!-- Complete History Table -->
-            <div class="glass-card rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
-                    <h3 class="font-semibold text-lg text-brand-500">Rincian Laba & Pengeluaran Lengkap</h3>
-                    <div class="text-sm text-slate-500">*Data di bawah ini bersifat rahasia.</div>
+            <div class="glass-card card-3d overflow-hidden flex flex-col bg-white/70">
+                <div class="p-6 border-b border-brand-50 bg-[#fafafa]/80 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center text-brand-500 card-3d shadow-sm border border-brand-200">
+                            <i data-lucide="shield" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-extrabold text-xl text-brand-500">Rincian Laba & Pengeluaran</h3>
+                    </div>
+                    <div class="text-xs font-black px-3 py-1.5 rounded-full bg-[#ffb7b2]/20 text-[#e88882] flex items-center gap-1 border border-[#ffb7b2]/50 tracking-wide">
+                        <i data-lucide="lock" class="w-3 h-3"></i> RAHASIA
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left whitespace-nowrap text-slate-700 dark:text-slate-300">
-                        <thead class="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80 uppercase tracking-wider">
+                    <table class="w-full text-sm text-left whitespace-nowrap text-slate-600">
+                        <thead class="text-xs text-slate-400 bg-[#fbfbfb]/90 uppercase tracking-wider font-extrabold border-b border-slate-100">
                             <tr>
-                                <th class="px-6 py-4 font-medium">Tipe</th>
-                                <th class="px-6 py-4 font-medium">Waktu</th>
-                                <th class="px-6 py-4 font-medium">Keterangan</th>
-                                <th class="px-6 py-4 font-medium text-right">Omzet</th>
-                                <th class="px-6 py-4 font-medium text-right">Pengeluaran</th>
-                                <th class="px-6 py-4 font-medium text-right text-brand-600 dark:text-brand-400">Nilai Bersih</th>
+                                <th class="px-6 py-5">Tipe</th>
+                                <th class="px-6 py-5">Waktu</th>
+                                <th class="px-6 py-5">Keterangan</th>
+                                <th class="px-6 py-5 text-right">Omzet</th>
+                                <th class="px-6 py-5 text-right">Pengeluaran</th>
+                                <th class="px-6 py-5 text-right text-brand-500">Nilai Bersih</th>
+                                <th class="px-6 py-5 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="protected-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                        <tbody id="protected-table-body" class="divide-y divide-slate-50">
                             <!-- Populated via JS -->
                         </tbody>
                     </table>
@@ -227,29 +324,32 @@
     </main>
 
     <!-- PIN Modal Overlay -->
-    <div id="pin-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div id="pin-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-400 backdrop-blur-sm">
         <!-- Backdrop Blur -->
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closePinModal()"></div>
+        <div class="absolute inset-0 bg-[#fdfbf7]/80 backdrop-blur-md" onclick="closePinModal()"></div>
         
         <!-- Modal Box -->
-        <div class="relative bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-sm p-8 transform scale-95 transition-transform duration-300" id="pin-modal-content">
+        <div class="relative glass-card card-3d w-full max-w-sm p-8 transform scale-90 translate-y-8 transition-all duration-400 bg-white" id="pin-modal-content">
             
-            <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-                <i data-lucide="x" class="w-5 h-5"></i>
+            <button onclick="closePinModal()" class="absolute top-5 right-5 text-slate-300 hover:text-slate-500 transition-colors bg-slate-50 p-2 rounded-full border border-slate-100">
+                <i data-lucide="x" class="w-4 h-4"></i>
             </button>
 
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-600 dark:text-slate-300">
-                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-brand-50 to-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-5 text-brand-500 card-3d shadow-inner border border-white">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Akses Terkunci</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Masukkan PIN untuk melihat keuntungan.</p>
+                <h3 class="text-2xl font-black text-slate-800">Akses Terkunci</h3>
+                <p class="text-sm text-slate-500 mt-2 font-semibold">Masukkan PIN rahasia Anda.</p>
             </div>
 
-            <form onsubmit="verifyPin(event)" class="flex flex-col gap-4">
-                <input type="password" id="pin-input" required class="text-center tracking-[0.5em] text-2xl input-field w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-dark-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all font-mono" placeholder="••••••" maxlength="6">
-                <p id="pin-error" class="text-rose-500 text-sm text-center hidden font-medium">PIN Tidak Valid</p>
-                <button type="submit" class="w-full bg-slate-900 dark:bg-brand-600 hover:bg-slate-800 dark:hover:bg-brand-500 text-white font-medium py-3 rounded-xl transition-colors shadow-lg">
+            <form onsubmit="verifyPin(event)" class="flex flex-col gap-5">
+                <div class="relative">
+                    <input type="password" id="pin-input" required class="input-3d text-center tracking-[0.7em] text-3xl w-full px-4 py-4 font-mono font-bold text-slate-700 placeholder-slate-200" placeholder="••••••" maxlength="6">
+                    <div class="absolute inset-0 rounded-xl pointer-events-none border border-black/5"></div>
+                </div>
+                <p id="pin-error" class="text-[#e88882] text-sm text-center hidden font-bold bg-[#ffb7b2]/20 py-2 rounded-lg border border-[#ffb7b2]/50">PIN Tidak Valid</p>
+                <button type="submit" class="w-full btn-3d btn-3d-primary py-4 mt-2">
                     Buka Dasbor Laba
                 </button>
             </form>
@@ -257,12 +357,14 @@
     </div>
 
     <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
-        <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
-        <span id="toast-message">Berhasil disimpan</span>
+    <div id="toast" class="fixed bottom-6 right-6 bg-white text-slate-700 px-6 py-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] transform translate-y-32 opacity-0 z-50 flex items-center gap-3 border border-brand-100 card-3d">
+        <div class="w-8 h-8 rounded-full bg-[#b5ead7]/50 flex items-center justify-center border border-[#b5ead7]">
+            <i data-lucide="check-circle" class="w-5 h-5 text-[#6ba88f]"></i>
+        </div>
+        <span id="toast-message" class="font-bold text-sm">Berhasil disimpan</span>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=5"></script>
     <script>
         lucide.createIcons();
     </script>

@@ -50,6 +50,56 @@ const isWithinDays = (dateString, days) => {
     return diffDays <= days;
 };
 
+const isWithinDateRange = (dateString, startStr, endStr) => {
+    const date = new Date(dateString);
+    date.setHours(0,0,0,0);
+    
+    if (startStr && endStr) {
+        const start = new Date(startStr); start.setHours(0,0,0,0);
+        const end = new Date(endStr); end.setHours(0,0,0,0);
+        return date >= start && date <= end;
+    } else if (startStr) {
+        const start = new Date(startStr); start.setHours(0,0,0,0);
+        return date >= start;
+    } else if (endStr) {
+        const end = new Date(endStr); end.setHours(0,0,0,0);
+        return date <= end;
+    }
+    return isToday(dateString);
+};
+
+window.formatInputRupiah = function(elm) {
+    let value = elm.value.replace(/[^0-9]/g, '');
+    if (value) {
+        elm.value = parseInt(value, 10).toLocaleString('id-ID');
+    } else {
+        elm.value = '';
+    }
+};
+
+window.updateTransferAmount = () => {
+    const startStr = document.getElementById('tf-start-date').value;
+    const endStr = document.getElementById('tf-end-date').value;
+    
+    let totalOmset = 0;
+    let totalBiaya = 0;
+
+    transactions.forEach(t => {
+        if (isWithinDateRange(t.date, startStr, endStr)) {
+            totalOmset += parseInt(t.sellingPrice);
+        }
+    });
+
+    expenses.forEach(e => {
+        if (isWithinDateRange(e.date, startStr, endStr)) {
+            totalBiaya += parseInt(e.amount);
+        }
+    });
+
+    const transferAmount = totalOmset - totalBiaya;
+    document.getElementById('transfer-amount').innerText = formatCurrency(transferAmount);
+};
+
 // Fetch data from InsForge
 const loadData = async () => {
     document.getElementById('today-omset').innerText = 'Loading...';
@@ -94,16 +144,16 @@ const updatePublicDashboard = () => {
 
     todayRecords.forEach(r => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors";
+        tr.className = "hover:bg-brand-50/50 transition-colors";
         
         const isExpense = r.type === 'expense';
-        const colorClass = isExpense ? 'text-rose-500' : 'text-brand-500';
+        const colorClass = isExpense ? 'text-[#e88882]' : 'text-brand-500';
         const sign = isExpense ? '-' : '+';
         const amount = isExpense ? r.amount : r.sellingPrice;
         
         tr.innerHTML = `
-            <td class="px-6 py-3">${formatDate(r.date)}</td>
-            <td class="px-6 py-3 font-medium text-slate-900 dark:text-white flex items-center gap-2">
+            <td class="px-6 py-4 font-semibold">${formatDate(r.date)}</td>
+            <td class="px-6 py-4 font-bold text-slate-700 flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full ${isExpense ? 'bg-rose-500' : 'bg-brand-500'}"></span>
                 ${r.name}
             </td>
@@ -116,7 +166,12 @@ const updatePublicDashboard = () => {
         tbody.innerHTML = '<tr><td colspan="3" class="px-6 py-4 text-center text-slate-500">Belum ada transaksi hari ini</td></tr>';
     }
 
-    if(google.visualization) renderChart();
+    if(google.visualization) {
+        setTimeout(() => renderChart(), 50);
+    }
+    if(window.updateTransferAmount) {
+        window.updateTransferAmount();
+    }
 };
 
 const switchTab = (tab) => {
@@ -125,20 +180,23 @@ const switchTab = (tab) => {
     const tabOmset = document.getElementById('tab-omset');
     const tabExpense = document.getElementById('tab-expense');
 
+    const activeClasses = ['border-brand-400', 'text-brand-600', 'bg-white', 'shadow-[inset_0_-2px_4px_rgba(0,0,0,0.02)]', 'font-black'];
+    const inactiveClasses = ['border-transparent', 'text-slate-400', 'font-bold'];
+
     if (tab === 'omset') {
         formOmset.classList.remove('hidden');
         formExpense.classList.add('hidden');
-        tabOmset.classList.add('border-brand-500', 'text-brand-600', 'dark:text-brand-500', 'bg-brand-50/50', 'dark:bg-brand-900/20');
-        tabOmset.classList.remove('border-transparent', 'text-slate-500');
-        tabExpense.classList.remove('border-brand-500', 'text-brand-600', 'dark:text-brand-500', 'bg-brand-50/50', 'dark:bg-brand-900/20');
-        tabExpense.classList.add('border-transparent', 'text-slate-500');
+        tabOmset.classList.add(...activeClasses);
+        tabOmset.classList.remove(...inactiveClasses);
+        tabExpense.classList.remove(...activeClasses);
+        tabExpense.classList.add(...inactiveClasses);
     } else {
         formExpense.classList.remove('hidden');
         formOmset.classList.add('hidden');
-        tabExpense.classList.add('border-brand-500', 'text-brand-600', 'dark:text-brand-500', 'bg-brand-50/50', 'dark:bg-brand-900/20');
-        tabExpense.classList.remove('border-transparent', 'text-slate-500');
-        tabOmset.classList.remove('border-brand-500', 'text-brand-600', 'dark:text-brand-500', 'bg-brand-50/50', 'dark:bg-brand-900/20');
-        tabOmset.classList.add('border-transparent', 'text-slate-500');
+        tabExpense.classList.add(...activeClasses);
+        tabExpense.classList.remove(...inactiveClasses);
+        tabOmset.classList.remove(...activeClasses);
+        tabOmset.classList.add(...inactiveClasses);
     }
 };
 
@@ -147,15 +205,20 @@ const showToast = (message, isError = false) => {
     document.getElementById('toast-message').innerText = message;
     
     // Quick error styling toggle
-    if(isError) {
-        toast.querySelector('i').classList.replace('text-green-400', 'text-rose-400');
-    } else {
-        toast.querySelector('i').classList.replace('text-rose-400', 'text-green-400');
+    const icon = toast.querySelector('svg') || toast.querySelector('i');
+    if (icon) {
+        if(isError) {
+            icon.classList.remove('text-[#6ba88f]', 'text-green-400');
+            icon.classList.add('text-rose-500');
+        } else {
+            icon.classList.remove('text-rose-500', 'text-rose-400');
+            icon.classList.add('text-[#6ba88f]');
+        }
     }
 
-    toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.remove('translate-y-32', 'opacity-0');
     setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-32', 'opacity-0');
     }, 3000);
 };
 
@@ -166,39 +229,55 @@ const submitOmset = async (e) => {
     btn.innerHTML = 'Menyimpan...';
 
     const name = document.getElementById('omset-name').value;
-    const price = document.getElementById('omset-price').value;
+    const priceStr = document.getElementById('omset-price').value.replace(/\./g, '');
+    const price = parseInt(priceStr, 10);
     const dateInput = document.getElementById('omset-date').value;
 
     const payload = { 
         name: name,
-        selling_price: parseInt(price),
-        profit: parseInt(price)
+        selling_price: price,
+        profit: price
     };
 
     if (dateInput) {
         payload.date = new Date(dateInput).toISOString();
     }
 
-    const { data, error } = await insforge.database
-        .from('transactions')
-        .insert([payload])
-        .select();
+    // Optimistic UI
+    const tempId = 'temp-' + Date.now();
+    const tempRecord = {
+        ...payload,
+        id: tempId,
+        date: payload.date || new Date().toISOString(),
+        sellingPrice: payload.selling_price
+    };
+    transactions.unshift(tempRecord);
+    e.target.reset();
+    document.getElementById('omset-date').focus();
+    showToast("Omset berhasil dicatat!");
+    updatePublicDashboard();
+    if(isUnlocked) updateProtectedDashboard();
 
-    if (error) {
-        showToast("Gagal menyimpan omset!", true);
-        console.error(error);
-    } else {
-        const newRecord = data[0];
-        transactions.push({...newRecord, sellingPrice: newRecord.selling_price});
-        e.target.reset();
-        showToast("Omset berhasil dicatat!");
-        updatePublicDashboard();
-        if(isUnlocked) updateProtectedDashboard();
-    }
-    
     btn.disabled = false;
-    btn.innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Simpan Omset`;
+    btn.innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5"></i> Simpan Omset`;
     lucide.createIcons();
+
+    // Async Insert to DB
+    insforge.database.from('transactions').insert([payload]).select().then(({ data, error }) => {
+        if (error) {
+            console.error(error);
+            showToast("Gagal menyimpan ke server!", true);
+            transactions = transactions.filter(t => t.id !== tempId);
+            updatePublicDashboard();
+            if(isUnlocked) updateProtectedDashboard();
+        } else {
+            const idx = transactions.findIndex(t => t.id === tempId);
+            if(idx !== -1) {
+                transactions[idx] = {...data[0], sellingPrice: data[0].selling_price};
+                updateProtectedDashboard();
+            }
+        }
+    });
 };
 
 const submitExpense = async (e) => {
@@ -208,37 +287,53 @@ const submitExpense = async (e) => {
     btn.innerHTML = 'Menyimpan...';
 
     const name = document.getElementById('expense-name').value;
-    const amount = document.getElementById('expense-amount').value;
+    const amountStr = document.getElementById('expense-amount').value.replace(/\./g, '');
+    const amount = parseInt(amountStr, 10);
     const dateInput = document.getElementById('expense-date').value;
 
     const payload = { 
         name: name,
-        amount: parseInt(amount)
+        amount: amount
     };
 
     if (dateInput) {
         payload.date = new Date(dateInput).toISOString();
     }
 
-    const { data, error } = await insforge.database
-        .from('expenses')
-        .insert([payload])
-        .select();
+    // Optimistic UI
+    const tempId = 'temp-' + Date.now();
+    const tempRecord = {
+        ...payload,
+        id: tempId,
+        date: payload.date || new Date().toISOString()
+    };
+    expenses.unshift(tempRecord);
+    e.target.reset();
+    document.getElementById('expense-date').focus();
+    showToast("Pengeluaran berhasil dicatat!");
+    updatePublicDashboard();
+    if(isUnlocked) updateProtectedDashboard();
 
-    if (error) {
-        showToast("Gagal menyimpan pengeluaran!", true);
-        console.error(error);
-    } else {
-        expenses.push(data[0]);
-        e.target.reset();
-        showToast("Pengeluaran berhasil dicatat!");
-        updatePublicDashboard();
-        if(isUnlocked) updateProtectedDashboard();
-    }
-    
     btn.disabled = false;
-    btn.innerHTML = `<i data-lucide="minus-circle" class="w-4 h-4"></i> Simpan Pengeluaran`;
+    btn.innerHTML = `<i data-lucide="minus-circle" class="w-5 h-5"></i> Simpan Pengeluaran`;
     lucide.createIcons();
+
+    // Async Insert to DB
+    insforge.database.from('expenses').insert([payload]).select().then(({ data, error }) => {
+        if (error) {
+            console.error(error);
+            showToast("Gagal menyimpan ke server!", true);
+            expenses = expenses.filter(e => e.id !== tempId);
+            updatePublicDashboard();
+            if(isUnlocked) updateProtectedDashboard();
+        } else {
+            const idx = expenses.findIndex(e => e.id === tempId);
+            if(idx !== -1) {
+                expenses[idx] = data[0];
+                updateProtectedDashboard();
+            }
+        }
+    });
 };
 
 const openPinModal = () => {
@@ -248,7 +343,7 @@ const openPinModal = () => {
     modal.classList.remove('hidden');
     setTimeout(() => {
         modal.classList.remove('opacity-0');
-        document.getElementById('pin-modal-content').classList.remove('scale-95');
+        document.getElementById('pin-modal-content').classList.remove('scale-90', 'translate-y-8');
         document.getElementById('pin-input').focus();
     }, 10);
 };
@@ -256,10 +351,10 @@ const openPinModal = () => {
 const closePinModal = () => {
     const modal = document.getElementById('pin-modal');
     modal.classList.add('opacity-0');
-    document.getElementById('pin-modal-content').classList.add('scale-95');
+    document.getElementById('pin-modal-content').classList.add('scale-90', 'translate-y-8');
     setTimeout(() => {
         modal.classList.add('hidden');
-    }, 300);
+    }, 400);
 };
 
 const verifyPin = (e) => {
@@ -303,62 +398,81 @@ const lockApp = () => {
     document.getElementById('protected-table-body').innerHTML = '';
 };
 
-const updateProtectedDashboard = () => {
-    let todayLabaKotor = 0;
-    let todayPengeluaran = 0;
+window.updateProtectedDashboard = () => {
+    const startStr = document.getElementById('prot-start-date').value;
+    const endStr = document.getElementById('prot-end-date').value;
 
-    let allRecords = [];
+    let totalLabaKotor = 0;
+    let totalPengeluaran = 0;
+    let filteredRecords = [];
+
     transactions.forEach(t => { 
-        allRecords.push({...t, type: 'omset'});
-        if(isToday(t.date)) todayLabaKotor += t.profit;
+        if(isWithinDateRange(t.date, startStr, endStr)) {
+            filteredRecords.push({...t, type: 'omset'});
+            totalLabaKotor += t.profit;
+        }
     });
     expenses.forEach(e => { 
-        allRecords.push({...e, type: 'expense'});
-        if(isToday(e.date)) todayPengeluaran += e.amount;
+        if(isWithinDateRange(e.date, startStr, endStr)) {
+            filteredRecords.push({...e, type: 'expense'});
+            totalPengeluaran += e.amount;
+        }
     });
     
-    let todayLabaBersih = todayLabaKotor - todayPengeluaran;
+    let totalLabaBersih = (totalLabaKotor - totalPengeluaran) * 0.2;
 
-    document.getElementById('prot-laba-kotor').innerText = formatCurrency(todayLabaKotor);
-    document.getElementById('prot-pengeluaran').innerText = formatCurrency(todayPengeluaran);
-    document.getElementById('prot-laba-bersih').innerText = formatCurrency(todayLabaBersih);
+    document.getElementById('prot-laba-kotor').innerText = formatCurrency(totalLabaKotor);
+    document.getElementById('prot-pengeluaran').innerText = formatCurrency(totalPengeluaran);
+    document.getElementById('prot-laba-bersih').innerText = formatCurrency(totalLabaBersih);
 
     const tbody = document.getElementById('protected-table-body');
     tbody.innerHTML = '';
     
-    allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+    filteredRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    allRecords.forEach(r => {
+    filteredRecords.forEach(r => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors";
+        tr.className = "hover:bg-brand-50/50 transition-colors";
         
         const isExpense = r.type === 'expense';
         
         if (isExpense) {
             tr.innerHTML = `
-                <td class="px-6 py-4"><span class="px-2 py-1 bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 rounded text-xs font-bold">BIAYA</span></td>
-                <td class="px-6 py-4">${formatDate(r.date)}</td>
-                <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">${r.name}</td>
-                <td class="px-6 py-4 text-right text-slate-400">-</td>
-                <td class="px-6 py-4 text-right text-rose-500 font-medium">${formatCurrency(r.amount)}</td>
-                <td class="px-6 py-4 text-right text-rose-500 font-bold">-${formatCurrency(r.amount)}</td>
+                <td class="px-6 py-4"><span class="px-2 py-1 bg-[#ffb7b2]/30 text-[#e88882] rounded-lg text-xs font-black tracking-wide border border-[#ffb7b2]/50">BIAYA</span></td>
+                <td class="px-6 py-4 font-semibold">${formatDate(r.date)}</td>
+                <td class="px-6 py-4 font-bold text-slate-700">${r.name}</td>
+                <td class="px-6 py-4 text-right text-slate-300">-</td>
+                <td class="px-6 py-4 text-right text-[#e88882] font-bold">${formatCurrency(r.amount)}</td>
+                <td class="px-6 py-4 text-right text-[#e88882] font-black">-${formatCurrency(r.amount)}</td>
+                <td class="px-6 py-4 text-center">
+                    <button onclick="deleteRecord('${r.id}', 'expense')" class="text-slate-300 hover:text-rose-400 transition-colors p-2 rounded-xl hover:bg-rose-50" title="Hapus">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </td>
             `;
         } else {
             tr.innerHTML = `
-                <td class="px-6 py-4"><span class="px-2 py-1 bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400 rounded text-xs font-bold">OMSET</span></td>
-                <td class="px-6 py-4">${formatDate(r.date)}</td>
-                <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">${r.name}</td>
-                <td class="px-6 py-4 text-right font-medium">${formatCurrency(r.sellingPrice)}</td>
-                <td class="px-6 py-4 text-right text-slate-400">-</td>
-                <td class="px-6 py-4 text-right text-brand-500 font-bold">+${formatCurrency(r.profit)}</td>
+                <td class="px-6 py-4"><span class="px-2 py-1 bg-brand-100 text-brand-600 rounded-lg text-xs font-black tracking-wide border border-brand-200">OMSET</span></td>
+                <td class="px-6 py-4 font-semibold">${formatDate(r.date)}</td>
+                <td class="px-6 py-4 font-bold text-slate-700">${r.name}</td>
+                <td class="px-6 py-4 text-right font-bold text-slate-600">${formatCurrency(r.sellingPrice)}</td>
+                <td class="px-6 py-4 text-right text-slate-300">-</td>
+                <td class="px-6 py-4 text-right text-brand-500 font-black">+${formatCurrency(r.profit)}</td>
+                <td class="px-6 py-4 text-center">
+                    <button onclick="deleteRecord('${r.id}', 'omset')" class="text-slate-300 hover:text-rose-400 transition-colors p-2 rounded-xl hover:bg-rose-50" title="Hapus">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </td>
             `;
         }
         tbody.appendChild(tr);
     });
 
-    if (allRecords.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">Belum ada riwayat data</td></tr>';
+    if (filteredRecords.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Belum ada riwayat data</td></tr>';
     }
+    
+    lucide.createIcons();
 };
 
 window.renderChart = function() {
@@ -401,19 +515,45 @@ window.renderChart = function() {
     const options = {
         is3D: true,
         backgroundColor: 'transparent',
-        legend: { textStyle: { color: isDarkMode ? '#cbd5e1' : '#475569' }, position: 'right' },
+        legend: { textStyle: { color: '#64748b', fontName: 'Outfit', bold: true }, position: 'right' },
         chartArea: { width: '90%', height: '90%' },
-        colors: ['#0d9488', '#14b8a6', '#2dd4bf', '#5eead4', '#99f6e4', '#ccfbf1']
+        colors: ['#c084fc', '#ffb7b2', '#b5ead7', '#ffdac1', '#e2f0cb', '#d8b4fe']
     };
 
     const chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
     chart.draw(data, options);
 }
 
+window.deleteRecord = async (id, type) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+
+    const table = type === 'omset' ? 'transactions' : 'expenses';
+    
+    const { error } = await insforge.database
+        .from(table)
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        showToast("Gagal menghapus data!", true);
+        console.error(error);
+    } else {
+        if (type === 'omset') {
+            transactions = transactions.filter(t => String(t.id) !== String(id));
+        } else {
+            expenses = expenses.filter(e => String(e.id) !== String(id));
+        }
+        showToast("Data berhasil dihapus!");
+        updatePublicDashboard();
+        updateProtectedDashboard();
+    }
+};
+
 // Expose handlers to window because this is an ES Module
 window.switchTab = switchTab;
 window.submitOmset = submitOmset;
 window.submitExpense = submitExpense;
+window.deleteRecord = deleteRecord;
 window.openPinModal = openPinModal;
 window.closePinModal = closePinModal;
 window.verifyPin = verifyPin;
@@ -421,6 +561,25 @@ window.unlockApp = unlockApp;
 window.lockApp = lockApp;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize date inputs to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('prot-start-date').value = today;
+    document.getElementById('prot-end-date').value = today;
+    document.getElementById('tf-start-date').value = today;
+    document.getElementById('tf-end-date').value = today;
+
+    // Hide Splash Screen after 2.5s
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.remove();
+            }, 1000);
+        }, 2500);
+    }
+
+    const savedPin = localStorage.getItem('tehnang_pin');
     loadData();
 });
 
