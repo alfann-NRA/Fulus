@@ -3,11 +3,11 @@ import { BookOpen, Megaphone, Moon, Unlock } from 'lucide-react';
 export default function Header({ isProMode, onUnlockClick }) {
   return (
     <header className="flex items-center justify-between px-5 pt-8 pb-4 bg-white/80 backdrop-blur-md sticky top-0 z-30">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center font-bold text-slate-800 text-lg">
-          B.
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-brand to-brand-accent rounded-xl flex items-center justify-center font-black text-white text-xl shadow-lg shadow-brand/30 animate-pulse-glow">
+          F.
         </div>
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight">Budggt.</h1>
+        <h1 className="text-3xl font-black tracking-tight text-gradient">Fulus</h1>
       </div>
       
       <div className="flex items-center gap-3">

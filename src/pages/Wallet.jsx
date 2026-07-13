@@ -63,9 +63,11 @@ export default function Wallet({ isProMode }) {
         </button>
       </div>
 
-      <div className="bg-slate-850 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-light/10 rounded-full blur-3xl"></div>
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl animate-fade-in group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand/20 rounded-full blur-3xl group-hover:bg-brand/30 transition-all duration-700"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-accent/20 rounded-full blur-3xl group-hover:bg-brand-accent/30 transition-all duration-700"></div>
+        
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] opacity-50"></div>
         
         <div className="relative z-10">
           <div className="flex items-center gap-2 text-brand-light/80 text-xs font-bold uppercase tracking-widest mb-2">
@@ -107,35 +109,35 @@ export default function Wallet({ isProMode }) {
           <div className="mb-8">
             <div className="flex justify-between text-xs font-bold mb-2">
               <span className="text-white/50 uppercase tracking-wider text-[10px]">Progres ke Level Berikutnya</span>
-              <span className="text-brand">44%</span>
+              <span className="text-brand-light">44%</span>
             </div>
-            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full bg-brand rounded-full" style={{ width: '44%' }}></div>
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden shadow-inner">
+              <div className="h-full bg-gradient-to-r from-brand to-brand-accent rounded-full shadow-[0_0_10px_rgba(244,63,94,0.5)]" style={{ width: '44%' }}></div>
             </div>
           </div>
 
           {/* Cards Sub-Assets */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+          <div className="grid grid-cols-2 gap-3 relative z-10">
+            <div className="glass-card !bg-white/5 !border-white/10 rounded-2xl p-4 hover:scale-105 transition-transform duration-300">
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
-                <span className="text-[10px] font-bold text-white/50 uppercase tracking-wider">Dompet & Akun</span>
+                <span className="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.8)]"></span>
+                <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">Dompet & Akun</span>
               </div>
-              <div className="font-bold text-sm">{isProMode ? formatRupiah(dompet) : 'Rp***'}</div>
+              <div className="font-bold text-sm tracking-wide">{isProMode ? formatRupiah(dompet) : 'Rp***'}</div>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+            <div className="glass-card !bg-white/5 !border-white/10 rounded-2xl p-4 hover:scale-105 transition-transform duration-300">
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand"></span>
-                <span className="text-[10px] font-bold text-white/50 uppercase tracking-wider">Aset Likuid</span>
+                <span className="w-2 h-2 rounded-full bg-brand-light shadow-[0_0_8px_rgba(129,140,248,0.8)]"></span>
+                <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">Aset Likuid</span>
               </div>
-              <div className="font-bold text-sm">{isProMode ? formatRupiah(likuid) : 'Rp***'}</div>
+              <div className="font-bold text-sm tracking-wide">{isProMode ? formatRupiah(likuid) : 'Rp***'}</div>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 col-span-2">
+            <div className="glass-card !bg-white/5 !border-white/10 rounded-2xl p-4 col-span-2 hover:scale-[1.02] transition-transform duration-300">
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                <span className="text-[10px] font-bold text-white/50 uppercase tracking-wider">Aset Tetap</span>
+                <span className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></span>
+                <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">Aset Tetap</span>
               </div>
-              <div className="font-bold text-sm">{isProMode ? formatRupiah(tetap) : 'Rp***'}</div>
+              <div className="font-bold text-sm tracking-wide">{isProMode ? formatRupiah(tetap) : 'Rp***'}</div>
             </div>
           </div>
 
