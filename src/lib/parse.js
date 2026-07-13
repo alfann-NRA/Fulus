@@ -1,4 +1,4 @@
-import Parse from 'parse';
+const Parse = window.Parse;
 
 // Use environment variables for security
 Parse.initialize(
