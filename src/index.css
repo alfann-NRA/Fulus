@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #6366f1;
-  --color-brand-light: #818cf8;
-  --color-brand-dark: #4f46e5;
-  --color-brand-accent: #f43f5e;
-  
-  --font-sans: 'Outfit', sans-serif;
-
-  --animate-fade-in: fade-in 0.6s ease-out;
-  --animate-slide-up: slide-up 0.5s ease-out;
+  --color-m3-sys-light-primary: #006874; /* Teal-ish from Cashew */
+  --color-m3-sys-light-on-primary: #FFFFFF;
+  --color-m3-sys-light-primary-container: #97F0FF;
+  --color-m3-sys-light-on-primary-container: #001F24;
+  --color-m3-sys-light-secondary-container: #CCE8E7;
+  --color-m3-sys-light-on-secondary-container: #051F1F;
+  --color-m3-sys-light-surface: #FBFDFD;
+  --color-m3-sys-light-surface-container: #F1F4F4;
+  --color-m3-sys-light-surface-container-high: #EBEFEF;
+  --color-m3-sys-light-on-surface: #191C1C;
+  --color-m3-sys-light-on-surface-variant: #3F484A;
   --animate-pulse-glow: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-float: float 6s ease-in-out infinite;
 
@@ -60,14 +62,15 @@
 }
 
 body {
-  background-color: #f1f5f9;
+  background-color: var(--color-m3-sys-light-surface-container);
   -webkit-tap-highlight-color: transparent;
-  color: #1e293b;
+  color: var(--color-m3-sys-light-on-surface);
+  font-family: var(--font-sans);
 }
 
-/* Base styles for smooth transitions */
+/* Material You standard transitions */
 * {
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-  transition-duration: 200ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1); /* m3 standard easing */
 }

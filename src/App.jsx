@@ -39,7 +39,7 @@ export default function App() {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-slate-50 min-h-screen relative shadow-2xl overflow-hidden pb-24">
+    <div className="max-w-md mx-auto bg-[var(--color-m3-sys-light-surface-container)] min-h-screen relative shadow-2xl overflow-hidden pb-24">
       <Header isProMode={isProMode} onUnlockClick={() => setShowPinModal(true)} />
       
       <main className="px-5 pt-4">
