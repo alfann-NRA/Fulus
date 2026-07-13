@@ -74,19 +74,6 @@ export default function Wallet({ isProMode }) {
         </h1>
         <p className="text-[var(--color-m3-sys-light-on-surface-variant)] text-sm mb-6">Total Nilai Bersih</p>
         
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] opacity-50"></div>
-        
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 text-brand-light/80 text-xs font-bold uppercase tracking-widest mb-2">
-            <div className="w-2 h-2 rotate-45 border border-brand-light/80"></div>
-            Estimasi Kekayaan
-            {loading && isProMode && <Loader2 size={12} className="animate-spin ml-2" />}
-          </div>
-          
-          <h1 className="text-4xl font-black tracking-tight mb-8">
-            {isProMode ? formatRupiah(totalAsset) : 'Rp***.***,**'}
-          </h1>
-
         <div className="inline-flex items-center gap-3 bg-[var(--color-m3-sys-light-primary-container)] rounded-2xl p-4 w-full mb-6">
           <div className="w-12 h-12 bg-[var(--color-m3-sys-light-primary)] rounded-full flex items-center justify-center text-[var(--color-m3-sys-light-on-primary)] shadow-sm">
             <Rocket size={24} />
