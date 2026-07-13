@@ -16,6 +16,7 @@ google.charts.setOnLoadCallback(() => {
 // State
 let transactions = [];
 let expenses = [];
+let proofs = [];
 let isUnlocked = false;
 
 // Format Currency
@@ -104,19 +105,23 @@ window.updateTransferAmount = () => {
 const loadData = async () => {
     document.getElementById('today-omset').innerText = 'Loading...';
     
-    const [txRes, expRes] = await Promise.all([
+    const [txRes, expRes, proofRes] = await Promise.all([
         insforge.database.from('transactions').select(),
-        insforge.database.from('expenses').select()
+        insforge.database.from('expenses').select(),
+        insforge.database.from('transfer_proofs').select().order('created_at', { ascending: false })
     ]);
     
     if (txRes.error) console.error("Error fetching transactions", txRes.error);
     if (expRes.error) console.error("Error fetching expenses", expRes.error);
+    if (proofRes && proofRes.error) console.error("Error fetching proofs", proofRes.error);
     
     if (txRes.data) transactions = txRes.data.map(t => ({...t, sellingPrice: t.selling_price}));
     if (expRes.data) expenses = expRes.data;
+    if (proofRes && proofRes.data) proofs = proofRes.data;
     
     updatePublicDashboard();
     if(isUnlocked) updateProtectedDashboard();
+    renderProofs();
 };
 
 const updatePublicDashboard = () => {
@@ -547,6 +552,97 @@ window.deleteRecord = async (id, type) => {
         updatePublicDashboard();
         updateProtectedDashboard();
     }
+};
+
+window.uploadProof = async (input) => {
+    if (!input.files || input.files.length === 0) return;
+    
+    const file = input.files[0];
+    const btn = document.getElementById('btn-upload-proof');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Mengunggah...`;
+    btn.disabled = true;
+    lucide.createIcons();
+
+    try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+        
+        const { error: uploadError } = await insforge.storage.from('proofs').upload(filePath, file);
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = insforge.storage.from('proofs').getPublicUrl(filePath);
+        
+        const startStr = document.getElementById('tf-start-date').value;
+        const endStr = document.getElementById('tf-end-date').value;
+        
+        let totalOmset = 0;
+        let totalBiaya = 0;
+        transactions.forEach(t => {
+            if (isWithinDateRange(t.date, startStr, endStr)) totalOmset += parseInt(t.sellingPrice);
+        });
+        expenses.forEach(e => {
+            if (isWithinDateRange(e.date, startStr, endStr)) totalBiaya += parseInt(e.amount);
+        });
+        const transferAmount = totalOmset - totalBiaya;
+
+        const payload = {
+            start_date: startStr ? new Date(startStr).toISOString() : new Date().toISOString(),
+            end_date: endStr ? new Date(endStr).toISOString() : new Date().toISOString(),
+            amount: transferAmount,
+            photo_url: urlData.publicUrl
+        };
+
+        const { data: proofData, error: dbError } = await insforge.database.from('transfer_proofs').insert([payload]).select();
+        if (dbError) throw dbError;
+
+        if (proofData) {
+            proofs.unshift(proofData[0]);
+            renderProofs();
+        }
+
+        showToast("Bukti transfer berhasil diunggah!");
+    } catch (error) {
+        console.error("Upload error:", error);
+        showToast("Gagal mengunggah bukti transfer", true);
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        input.value = '';
+        lucide.createIcons();
+    }
+};
+
+const renderProofs = () => {
+    const gallery = document.getElementById('proofs-gallery');
+    if (!gallery) return;
+    
+    gallery.innerHTML = '';
+    
+    if (proofs.length === 0) {
+        gallery.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8 text-sm font-semibold">Belum ada bukti transfer</div>';
+        return;
+    }
+
+    proofs.forEach(p => {
+        const div = document.createElement('div');
+        div.className = "relative group overflow-hidden rounded-xl border border-slate-200 bg-slate-50 card-3d aspect-square";
+        
+        div.innerHTML = `
+            <img src="${p.photo_url}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+                <p class="text-white text-[10px] font-bold opacity-80">${formatDate(p.start_date)} - ${formatDate(p.end_date)}</p>
+                <p class="text-[#ffdac1] text-sm font-black">${formatCurrency(p.amount)}</p>
+                <a href="${p.photo_url}" target="_blank" class="absolute top-2 right-2 p-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white hover:bg-white/40 transition-colors">
+                    <i data-lucide="maximize-2" class="w-3 h-3"></i>
+                </a>
+            </div>
+        `;
+        gallery.appendChild(div);
+    });
+    
+    lucide.createIcons();
 };
 
 // Expose handlers to window because this is an ES Module

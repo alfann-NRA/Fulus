@@ -120,15 +120,21 @@
                 <!-- Transfer -->
                 <div class="glass-card card-3d p-6 lg:p-8 relative overflow-hidden group bg-gradient-to-br from-white/80 to-[#ffdac1]/40 border-t-4 border-t-[#ffdac1]">
                     <div class="absolute -right-6 -top-6 w-32 h-32 bg-[#ffdac1]/40 rounded-full blur-2xl group-hover:bg-[#ffdac1]/60 transition-all duration-500"></div>
-                    <div class="relative z-10 flex flex-col h-full justify-between">
+                    <div class="relative z-10 flex flex-col h-full justify-between gap-4">
                         <div>
                             <p class="text-sm font-black text-[#d69f7e] mb-2 uppercase tracking-wider">Jumlah Transfer</p>
-                            <h2 class="text-3xl lg:text-4xl font-extrabold text-slate-800 drop-shadow-sm mb-4" id="transfer-amount">Rp 0</h2>
+                            <h2 class="text-3xl lg:text-4xl font-extrabold text-slate-800 drop-shadow-sm" id="transfer-amount">Rp 0</h2>
                         </div>
-                        <div class="flex items-center gap-2 mt-auto relative z-20">
-                            <input type="date" id="tf-start-date" onchange="updateTransferAmount()" class="w-full text-[11px] lg:text-xs input-3d px-2 py-1.5 font-semibold text-slate-700 bg-white/70 border border-[#ffdac1] rounded-lg outline-none focus:ring-2 focus:ring-[#ffdac1]">
-                            <span class="text-slate-400 font-bold">-</span>
-                            <input type="date" id="tf-end-date" onchange="updateTransferAmount()" class="w-full text-[11px] lg:text-xs input-3d px-2 py-1.5 font-semibold text-slate-700 bg-white/70 border border-[#ffdac1] rounded-lg outline-none focus:ring-2 focus:ring-[#ffdac1]">
+                        <div class="flex flex-col gap-3 relative z-20">
+                            <div class="flex items-center gap-2">
+                                <input type="date" id="tf-start-date" onchange="updateTransferAmount()" class="w-full text-[11px] lg:text-xs input-3d px-2 py-1.5 font-semibold text-slate-700 bg-white/70 border border-[#ffdac1] rounded-lg outline-none focus:ring-2 focus:ring-[#ffdac1]">
+                                <span class="text-slate-400 font-bold">-</span>
+                                <input type="date" id="tf-end-date" onchange="updateTransferAmount()" class="w-full text-[11px] lg:text-xs input-3d px-2 py-1.5 font-semibold text-slate-700 bg-white/70 border border-[#ffdac1] rounded-lg outline-none focus:ring-2 focus:ring-[#ffdac1]">
+                            </div>
+                            <input type="file" id="proof-input" accept="image/*" class="hidden" onchange="uploadProof(this)">
+                            <button id="btn-upload-proof" onclick="document.getElementById('proof-input').click()" class="w-full btn-3d bg-white text-[#d69f7e] border border-[#ffdac1] hover:bg-[#ffdac1]/20 py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                                <i data-lucide="upload-cloud" class="w-4 h-4"></i> Unggah Bukti
+                            </button>
                         </div>
                     </div>
                     <div class="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-500 transform group-hover:scale-110 pointer-events-none">
@@ -316,6 +322,19 @@
                             <!-- Populated via JS -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+            
+            <!-- Transfer Proofs Gallery -->
+            <div class="glass-card card-3d p-6 bg-white/70">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-[#ffdac1]/50 flex items-center justify-center text-[#d69f7e] card-3d shadow-sm border border-[#ffdac1]">
+                        <i data-lucide="image" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="font-extrabold text-xl text-[#d69f7e]">Galeri Bukti Transfer</h3>
+                </div>
+                <div id="proofs-gallery" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Images will be rendered here -->
                 </div>
             </div>
             
